@@ -1,16 +1,20 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,5 +80,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 调用mapper
         employeeMapper.save(employee);
     }
+
+    @Override
+    public PageResult page(EmployeePageQueryDTO employeePageQueryDTO) {
+        // 设置pagehelper的开始index和pagesize
+        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+        // 只能使用Page<T>来接收
+        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
+        // 细节：需要对象转换器来将日期转换成对应的格式
+        return new PageResult(page.getTotal(),page.getResult());
+    }
+
 
 }
