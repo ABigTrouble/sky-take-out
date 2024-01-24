@@ -91,5 +91,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new PageResult(page.getTotal(),page.getResult());
     }
 
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        // 创建一个对象出来
+        Employee emp = Employee.builder().id(id).status(status).build();
+        // 将对象传给mapper
+        employeeMapper.update(emp);
+
+    }
+
 
 }
