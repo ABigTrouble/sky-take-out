@@ -2,12 +2,14 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.annotation.AutoFill;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.enumeration.OperationType;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
@@ -96,4 +98,47 @@ public class DishServiceImpl implements DishService {
         dishFlavorMapper.deleteBatch(ids);
     }
 
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getByIdWithFlavor(Long id) {
+        // 查询菜品的基本信息
+        Dish dish = dishMapper.getById(id);
+        DishVO vo = new DishVO();
+        BeanUtils.copyProperties(dish, vo);
+
+        // 查询菜品的口味
+
+        List<DishFlavor> dishFlavors = dishFlavorMapper.getByDishId(id);
+        vo.setFlavors(dishFlavors);
+        return vo;
+    }
+
+    /**
+     * 修改菜品
+     * @param dishDTO
+     */
+    @Transactional
+    public void update(DishDTO dishDTO) {
+        // 由于dish表中没有flavor所以需要分开处理
+        // 修改dish表
+        Dish dish =new Dish();
+        BeanUtils.copyProperties(dishDTO,dish);
+        dishMapper.update(dish);
+
+        // 删除flavor
+        dishFlavorMapper.deleteByDishId(dish.getId());
+
+        // 新增
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if (flavors!=null && flavors.size()>0) {
+            flavors.forEach(dishFlavor -> {
+                dishFlavor.setDishId(dish.getId());
+            });
+            dishFlavorMapper.insertBatch(flavors);
+        }
+    }
 }
