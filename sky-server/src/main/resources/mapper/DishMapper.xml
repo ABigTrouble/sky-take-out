@@ -11,6 +11,13 @@
                 #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
 
     </insert>
+    <delete id="deleteBatch">
+        DELETE FROM dish
+        WHERE id in
+        <foreach collection="ids" item="item" separator="," close=")" open="(">
+            #{item}
+        </foreach>
+    </delete>
     <select id="pageQuery" resultType="com.sky.vo.DishVO">
         SELECT d.*, c.name as categoryName
         FROM dish d left join category c on d.category_id = c.id
@@ -26,5 +33,12 @@
             </if>
         </where>
         order by d.create_time desc
+    </select>
+    <select id="getByIds" resultType="com.sky.entity.Dish">
+        SELECT * FROM dish
+        WHERE id in
+        <foreach collection="ids" item="item" separator="," close=")" open="(">
+            #{item}
+        </foreach>
     </select>
 </mapper>
