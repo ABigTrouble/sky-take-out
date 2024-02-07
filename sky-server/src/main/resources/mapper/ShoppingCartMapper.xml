@@ -16,6 +16,15 @@
             and dish_flavor = #{dishFlavor}
         </if>
     </sql>
+    <insert id="insertBatch">
+        INSERT INTO shopping_cart
+            (name, image, user_id, dish_id, setmeal_id, dish_flavor, number, amount, create_time)
+        VALUES
+            <foreach collection="list" item="item" separator=",">
+                (#{item.name},#{item.image},#{item.userId},#{item.dishId},#{item.setmealId},#{item.dishFlavor},
+                 #{item.number},#{item.amount},#{item.createTime})
+            </foreach>
+    </insert>
     <select id="list" resultType="com.sky.entity.ShoppingCart">
         SELECT *
         FROM shopping_cart
