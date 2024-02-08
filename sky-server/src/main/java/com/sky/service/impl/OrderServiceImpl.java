@@ -75,9 +75,9 @@ public class OrderServiceImpl implements OrderService {
         orders.setUserId(BaseContext.getCurrentId());
         orders.setCancelReason(addressBook.getConsignee());
         orders.setNumber(String.valueOf(System.currentTimeMillis()));
-        orders.setPayStatus(Orders.PENDING_PAYMENT);
+        orders.setPayStatus(Orders.UN_PAID);
         orders.setPhone(addressBook.getPhone());
-        orders.setStatus(Orders.UN_PAID);
+        orders.setStatus(Orders.PENDING_PAYMENT);
 
         orderMapper.insert(orders);
         // 插入订单详情
